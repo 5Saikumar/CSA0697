@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define N 8  // You can change N for different board sizes
+
+int main() {
+    int board[N][N] = {0}; // Initialize the chessboard with 0s (no queens placed)
+    int col = 0;           // Start from the first column
+    int row; 
+	int i,j;              // Variable for the current row
+    bool placed;           // Flag to indicate if a queen can be placed
+
+    while (col >= 0) {
+        placed = false; // Reset the placed flag for the current column
+
+        // Try to place a queen in the current column
+        for (row = 0; row < N; row++) {
+            bool safe = true;
+
+            // Check if placing a queen is safe
+            // Check this row on the left side
+            for ( i = 0; i < col; i++) {
+                if (board[row][i]) {
+                    safe = false;
+                    break;
+                }
+            }
+
+            // Check upper diagonal on the left side
+            for (i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+                if (board[i][j]) {
+                    safe = false;
+                    break;
+                }
+            }
+
+            // Check lower diagonal on the left side
+            for ( i = row, j = col; j >= 0 && i < N; i++, j--) {
+                if (board[i][j]) {
+                    safe = false;
+                    break;
+                }
+            }
+
+            // If it's safe to place the queen
+            if (safe) {
+                board[row][col] = 1; // Place the queen
+                placed = true;       // Set the flag to true
+                break;              // Move to the next column
+            }
+        }
+
+        // If a queen has been placed in the current column
+        if (placed) {
+            // If all queens are placed, print the solution
+            if (col == N - 1) {
+                // Print the board configuration
+                printf("Solution:\n");
+                for ( i = 0; i < N; i++) {
+                    for ( j = 0; j < N; j++) {
+                        printf("%2d ", board[i][j]);
+                    }
+                    printf("\n");
+                }
+                printf("\n");
+
+                // Backtrack: Remove the last placed queen and try to find new positions
+                col--; // Move back to the previous column
+                for (row = 0; row < N; row++) {
+                    if (board[row][col] == 1) {
+                        board[row][col] = 0; // Remove the queen
+                        break;
+                    }
+                }
+            } else {
+                // Move to the next column
+                col++;
+            }
+        } else {
+            // If no queen can be placed in the current column, backtrack
+            col--; // Move back to the previous column
+
+            // If we've moved past the first column, try to find a new row
+            if (col >= 0) {
+                for (row = 0; row < N; row++) {
+                    if (board[row][col] == 1) {
+                        board[row][col] = 0; // Remove the queen
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
+}

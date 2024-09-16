@@ -1,0 +1,11 @@
+#include <stdio.h>
+
+#define INF 99999
+int main() {
+    int graph[3][3] = {{0, 1, 2}, {1, 0, 4}, {2, 4, 0}}, n = 3, cost = 0;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < i; j++)
+            if (graph[i][j] < INF) cost += graph[i][j];
+    printf("Total cost of MST: %d\n", cost);
+    return 0;
+}

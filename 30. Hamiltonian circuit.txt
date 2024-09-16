@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define V 5  // Number of vertices in the graph
+
+int main() {
+    // Graph represented as an adjacency matrix
+    int graph[V][V] = {
+        {0, 1, 1, 1, 0},
+        {1, 0, 0, 1, 1},
+        {1, 0, 0, 1, 1},
+        {1, 1, 1, 0, 1},
+        {0, 1, 1, 1, 0}
+    };
+
+    int path[V];  // To store the Hamiltonian path
+    int pos = 1;  
+	int i,j,v;
+    bool found = false; // Flag to check if a Hamiltonian circuit is found
+
+    // Initialize the path
+    for ( i = 0; i < V; i++) {
+        path[i] = -1;
+    }
+
+    // Let the first vertex be the starting point
+    path[0] = 0; // Starting from vertex 0
+
+    while (true) {
+        // If all vertices are included in the path
+        if (pos == V) {
+            // Check if there is an edge from the last included vertex to the first vertex
+            if (graph[path[pos - 1]][path[0]] == 1) {
+                found = true; // Hamiltonian circuit found
+                break;
+            } else {
+                // Backtrack to explore other paths
+                pos--;
+                if (pos < 0) break; // Exit if no more paths to explore
+                path[pos] = -1; // Reset the position to try the next vertex
+            }
+        } else {
+            // Try different vertices as the next candidate
+            bool added = false; // Flag to check if a vertex has been added
+            for ( v = 1; v < V; v++) { // Try different vertices as the next candidate
+                // Check if the vertex can be added to the path
+                bool safe = true;
+                if (graph[path[pos - 1]][v] == 0) safe = false; // Check adjacency
+                for ( i = 0; i < pos; i++) {
+                    if (path[i] == v) {
+                        safe = false; // Check if the vertex is already in the path
+                        break;
+                    }
+                }
+
+                if (safe) { // If it is safe to add the vertex
+                    path[pos] = v; // Add vertex to the path
+                    pos++; // Move to the next position
+                    added = true; // Mark that a vertex was added
+                    break; // Break to restart the loop to process the next vertex
+                }
+            }
+
+            if (!added) { // If no vertex could be added, backtrack
+                pos--;
+                if (pos < 0) break; // Exit if no more paths to explore
+                path[pos] = -1; // Reset the position to try the next vertex
+            }
+        }
+    }
+
+    // Output the result
+    if (found) {
+        printf("Hamiltonian Circuit exists: ");
+        for ( i = 0; i < V; i++) {
+            printf("%d ", path[i]);
+        }
+        printf("%d\n", path[0]); // Print the starting point again to close the circuit
+    } else {
+        printf("No Hamiltonian Circuit exists\n");
+    }
+
+    return 0;
+}
